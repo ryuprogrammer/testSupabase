@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -79,8 +81,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   TextFormField(
                     onFieldSubmitted: (value) async {
-                      // _addMemo(value); // メモを追加する関数を呼び出す
-                      // Navigator.pop(context); // ダイアログを閉じる
+                      await Supabase.instance.client
+                          .from('notes')
+                          .insert({'body': value});
                     },
                   ),
                 ],
