@@ -69,7 +69,25 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: ((context) {
+              return SimpleDialog(
+                title: const Text('メモ追加'),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+                children: [
+                  TextFormField(
+                    onFieldSubmitted: (value) async {
+                      // _addMemo(value); // メモを追加する関数を呼び出す
+                      // Navigator.pop(context); // ダイアログを閉じる
+                    },
+                  ),
+                ],
+              );
+            }),
+          );
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
