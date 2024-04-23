@@ -41,14 +41,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  // supabaseのnotesテーブルにアクセスするためのストリーム
+  // データベースのリアルタイムの変更を取得できる
+  final _notesStream =
+      Supabase.instance.client.from('notes').stream(primaryKey: ['id']);
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+  // 変数にストリームがある→ストリームビルダーを作成
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,19 +54,26 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        // 監視するストリーム
+        stream: _notesStream,
+        // データを渡す↓
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          // リスト
+          final notes = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: notes.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(notes[index]['body']),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
